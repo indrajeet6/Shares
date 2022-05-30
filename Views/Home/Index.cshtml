@@ -1,0 +1,57 @@
+﻿@using Shares.Model
+
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+@{
+    var data = ViewData["Message"];  
+}
+
+<div class="jumbotron">
+    <h1>Share Values</h1>
+    <button>Refresh Values</button>
+</div>
+<div class="row">
+    <div>
+        <table id="Table1" style="border: 1px solid black; text-align:center" runat="server">
+         <tr style="border: 1px solid black;" >
+            <th style="border: 1px solid black;">
+                Symbol
+            </th>
+            <th style="border: 1px solid black;">
+                Name
+            </th>
+            <th style="border: 1px solid black;">
+                Previous Working Day Market Value
+            </th>
+            <th style="border: 1px solid black;">
+                Count
+            </th>
+            <th style="border: 1px solid black;">
+                Total
+            </th>
+        </tr>
+            @foreach(var std in data as IEnumerable<Share> )
+                {
+                    <tr style="border: 1px solid black;">
+                        <td style="border: 1px solid black;">
+                        @std.Symbol
+                        </td>
+                        <td style="border: 1px solid black;">
+                            @std.Name
+                        </td>
+                        <td style="border: 1px solid black;">
+                            @std.MktValue
+                        </td>
+                        <td style="border: 1px solid black;">
+                            @std.Count
+                        </td>
+                        <td style="border: 1px solid black;">
+                            @std.Total
+                        </td>
+                        </tr>
+                }
+        </table>
+    </div>
+</div>
