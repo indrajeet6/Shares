@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Shares.Models;
 using System.Diagnostics;
+using Shares.Controllers;
 
 //https://stackify.com/restsharp/
 //Add Another Class to use the API below to refresh the Market Values and the total value in the Database then refresh the view

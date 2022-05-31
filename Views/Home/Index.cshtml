@@ -10,7 +10,10 @@
 
 <div class="jumbotron">
     <h1>Share Values</h1>
-    <button>Refresh Values</button>
+    @*<button>Refresh Values</button>*@
+    @*<input type="button" value="Refresh Values" onclick=Url.Action("Index", "UpdateValues")/>*@
+    @Html.ActionLink("Refresh Values","Index", "UpdateValues")
+
 </div>
 <div class="row">
     <div>
