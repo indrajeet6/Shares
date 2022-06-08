@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using RestSharp;
 using Newtonsoft.Json;
+using Shares.Model;
 
 namespace Shares.Controllers
 {
@@ -29,57 +30,56 @@ namespace Shares.Controllers
             foreach(var item in query)
             {
                 string strSymbol = item.Symbol;
-                float fltCurrentValue = 0.00F;
+                decimal decCurrentValue = 0.00M;
 
-                //Get BSE Data
-                var clientBSE = new RestClient("https://www.alphavantage.co/");
-                var requestBSE = new RestRequest("query");
-                clientBSE.AddDefaultQueryParameter("function", "GLOBAL_QUOTE");
-                clientBSE.AddDefaultQueryParameter("symbol", strSymbol + ".BSE");
-                clientBSE.AddDefaultParameter("apikey", "KRIXYZMN9FTOEISH");
-                var responseBSE = await clientBSE.ExecuteAsync(requestBSE);
+                ////Get BSE Data
+                //var clientBSE = new RestClient("https://www.alphavantage.co/");
+                //var requestBSE = new RestRequest("query");
+                //clientNSE.AddDefaultQueryParameter("function", "GLOBAL_QUOTE");
+                //clientNSE.AddDefaultQueryParameter("symbol", strSymbol + ".NSE");
+                //clientNSE.AddDefaultParameter("apikey", "KRIXYZMN9FTOEISH");
+                //var responseBSE = await clientNSE.ExecuteAsync(requestBSE);
 
                 //Get NSE Data
-                var clientNSE = new RestClient("https://www.alphavantage.co/");
-                var requestNSE = new RestRequest("query");
-                clientNSE.AddDefaultQueryParameter("function", "GLOBAL_QUOTE");
-                clientNSE.AddDefaultQueryParameter("symbol", strSymbol + ".NSE");
-                clientNSE.AddDefaultParameter("apikey", "KRIXYZMN9FTOEISH");
+                var clientNSE = new RestClient("https://google-finance4.p.rapidapi.com/search/?");
+                var requestNSE = new RestRequest();
+                clientNSE.AddDefaultParameter("q", strSymbol + ":NSE");
+                clientNSE.AddDefaultParameter("hl", "en");
+                clientNSE.AddDefaultParameter("gl", "IN");
+                clientNSE.AddDefaultHeader("X-RapidAPI-Host", "google-finance4.p.rapidapi.com");
+                clientNSE.AddDefaultHeader("X-RapidAPI-Key", "6236083a46mshc2a5feedffcd36ep1613e7jsn3891dce27e27");
                 var responseNSE = await clientNSE.ExecuteAsync(requestNSE);
 
-                if (responseBSE.IsSuccessful == true && responseBSE.Content != "{}")
-                {
-                    dynamic collection = JsonConvert.DeserializeObject(responseBSE.Content);
-                    try
-                    {
-                        fltCurrentValue = collection["Global Quote"]["08. previous close"];
-                        Console.WriteLine(fltCurrentValue);
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine(ex.Message);
-                    }
-                    
-                }
-                else if (responseNSE.IsSuccessful == true && responseNSE.Content !="{}")
+                if (responseNSE.IsSuccessful == true && responseNSE.Content != null)
                 {
                     dynamic collection = JsonConvert.DeserializeObject(responseNSE.Content);
-                    try
+                    if(collection != null)
                     {
-                        fltCurrentValue = collection["Global Quote"]["08. previous close"];
-                        Console.WriteLine(fltCurrentValue);
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine(ex.Message);
+                        try
+                        {
+                            decCurrentValue = collection[0]["price"]["previous_close"];
+                            using (var context = new Shares_DBContext(Configuration))
+                            {
+                                var entity = context.Shares.FirstOrDefault(item => item.Symbol == strSymbol);
+                                if (entity != null)
+                                {
+                                    entity.MktValue = decCurrentValue;
+                                }
+                                context.SaveChanges();
+                            }
+                            //Console.WriteLine(decCurrentValue);
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine(ex.Message);
+                        }
                     }
                 }
-                else 
-                { 
-                    Console.WriteLine("Share Symbol Not Found"); 
+                else
+                {
+                    Console.WriteLine("Share Symbol Not Found");
                 }
             }
-
             Console.WriteLine("Values Updated");
             return Redirect("/Home/Index");
         }
