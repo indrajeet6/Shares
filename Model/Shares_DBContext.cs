@@ -22,7 +22,7 @@ namespace Shares.Model
                 //You can avoid scaffolding the connection string by using the Name = syntax to read it from configuration -
                 //see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
                 //optionsBuilder.UseSqlServer("Server=MSI-LAPTOP;Database=Shares_DB;Trusted_Connection=True;");
-                string strConnString = this.Configuration.GetConnectionString("MSIDB");
+                string strConnString = this.Configuration.GetConnectionString("OfficeDB");
                 optionsBuilder.UseSqlServer(strConnString);
             }
         }
@@ -48,6 +48,9 @@ namespace Shares.Model
                 entity.Property(e => e.Name).IsUnicode(false);
 
                 entity.Property(e => e.Total).HasColumnType("money");
+
+                entity.Property(e => e.LastUpdateTime).IsUnicode(false);
+
             });
 
             OnModelCreatingPartial(modelBuilder);
