@@ -100,20 +100,32 @@ namespace Shares.Controllers
                         var csv = new CsvReader(fileReader, config);
                         csv.Read();
                         result = csv.GetRecords<BSE_Metadata>();
+                        //Get Name and Code from the CSV File
+                        Console.WriteLine(item.Name.ToString());
+                        var dataItem = result.FirstOrDefault(x => x.name.Contains(item.Name.ToString(),StringComparison.OrdinalIgnoreCase));
+                        if (dataItem != null)
+                        {
+                            string strCode = dataItem.code;
+                            string strUpdateDate;
+                            //Get BSE Data from Nasdaq Datalink API
+                            var clientBSE = new RestClient("https://data.nasdaq.com/api/v3/datasets/BSE/" + strCode + "?");
+                            var requestBSE = new RestRequest();
+                            clientBSE.AddDefaultParameter("column_index", "4");
+                            clientBSE.AddDefaultParameter("api_key", "4dzzDZvBaT2vU5_hUR7q");
+                            var responseBSE = await clientBSE.ExecuteAsync(requestBSE);
+                            //Write Code to Deserialize JSON - create class and deserialize. Once done, get the last updated price
+                            
+                            
+                        }
+                        else
+                            Console.WriteLine(item.Name + " Symbol not found");
                     }
                     //Write Code to get BSE data from the Nasdaq API
-                    Console.WriteLine(result.FirstOrDefault(x => x.name.Contains(item.Name)).code.ToString());
 
-                    //Get NSE Data
-                    var clientBSE = new RestClient("https://data.nasdaq.com/api/v3/datasets/BSE/BOM500470?");
-                    var requestBSE = new RestRequest();
-                    clientBSE.AddDefaultParameter("column_index", "4");
-                    clientBSE.AddDefaultParameter("api_key", "4dzzDZvBaT2vU5_hUR7q");
-
-                    var responseBSE = await clientBSE.ExecuteAsync(requestBSE);
+                    
 
 
-                    Console.WriteLine("Share Symbol Not Found: " + item.Symbol.ToString());
+                    //Console.WriteLine("Share Symbol Not Found: " + item.Symbol.ToString());
                 }
             }
             context.SaveChanges();
