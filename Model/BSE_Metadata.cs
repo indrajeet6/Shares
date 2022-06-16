@@ -1,4 +1,5 @@
-﻿namespace Shares.Model
+﻿using Newtonsoft.Json;
+namespace Shares.Model
 {
     public class BSE_Metadata
     {

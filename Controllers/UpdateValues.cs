@@ -114,17 +114,14 @@ namespace Shares.Controllers
                             clientBSE.AddDefaultParameter("api_key", "4dzzDZvBaT2vU5_hUR7q");
                             var responseBSE = await clientBSE.ExecuteAsync(requestBSE);
                             //Write Code to Deserialize JSON - create class and deserialize. Once done, get the last updated price
-                            
-                            
+                            dynamic dynBSEData = JsonConvert.DeserializeObject(responseBSE.Content);
+                            string strLastUpdateDate = dynBSEData["dataset"]["end_date"];
+                            string strPrice = dynBSEData["dataset"]["data"][0][1];
+                            //Continue the code to update the values.
                         }
                         else
                             Console.WriteLine(item.Name + " Symbol not found");
                     }
-                    //Write Code to get BSE data from the Nasdaq API
-
-                    
-
-
                     //Console.WriteLine("Share Symbol Not Found: " + item.Symbol.ToString());
                 }
             }
